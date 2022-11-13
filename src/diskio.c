@@ -2,14 +2,9 @@
 #include <memory.h>
 #include "diskio.h"
 #include "ff.h"
-#include "hardware/flash.h"
+#include "platform_config.h"
 
 typedef void *bdev_t;
-#define FLASH_STORAGE_BYTES (8 * 1024 * 1024)
-#define BLOCK_SIZE          (FLASH_SECTOR_SIZE)
-#define BLOCK_COUNT         (FLASH_STORAGE_BYTES / BLOCK_SIZE)
-#define FLASH_BASE_ADDR     (256 * 1024)
-#define FLASH_MMAP_ADDR     (XIP_BASE + FLASH_BASE_ADDR)
 
 /*-----------------------------------------------------------------------*/
 /* Read Sector(s)                                                        */
@@ -22,8 +17,10 @@ DRESULT disk_read(
         UINT count        /* Number of sectors to read (1..128) */
 ) {
     (void) pdrv;
-    
-    memcpy(buff, (void *) (FLASH_MMAP_ADDR + sector * BLOCK_SIZE), count * BLOCK_SIZE);
+
+    void *to = (void *) (FLASH_MMAP_ADDR + sector * FLASH_SECTOR_SIZE);
+    size_t size = count * FLASH_SECTOR_SIZE;
+    memcpy(buff, to, size);
     return RES_OK;
 }
 
@@ -40,8 +37,10 @@ DRESULT disk_write(
     (void) pdrv;
 
     uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(FLASH_BASE_ADDR + sector * BLOCK_SIZE, count * BLOCK_SIZE);
-    flash_range_program(FLASH_BASE_ADDR + sector * BLOCK_SIZE, buff, count * BLOCK_SIZE);
+    flash_range_erase(FLASH_BASE_ADDR + sector * FLASH_SECTOR_SIZE, count * FLASH_SECTOR_SIZE);
+    restore_interrupts(ints);
+    ints = save_and_disable_interrupts();
+    flash_range_program(FLASH_BASE_ADDR + sector * FLASH_SECTOR_SIZE, buff, count * FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
     return RES_OK;
 }
@@ -68,7 +67,7 @@ DRESULT disk_ioctl(
         }
 
         case GET_SECTOR_SIZE: {
-            *((DWORD *) buff) = BLOCK_SIZE;
+            *((DWORD *) buff) = FLASH_SECTOR_SIZE;
             return RES_OK;
         }
 

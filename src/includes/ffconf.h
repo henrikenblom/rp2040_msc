@@ -1,3 +1,5 @@
+#include "hardware/flash.h"
+
 /* This file is part of ooFatFs, a customised version of FatFs
  * See https://github.com/micropython/oofatfs for details
  */
@@ -198,8 +200,8 @@
 /  funciton will be available. */
 
 
-#define FF_MIN_SS       512
-#define FF_MAX_SS       512
+#define FF_MIN_SS       (FLASH_SECTOR_SIZE)
+#define FF_MAX_SS       (FLASH_SECTOR_SIZE)
 /* This set of options configures the range of sector size to be supported. (512,
 /  1024, 2048 or 4096) Always set both 512 for most systems, generic memory card and
 /  harddisk. But a larger value may be required for on-board flash memory and some
