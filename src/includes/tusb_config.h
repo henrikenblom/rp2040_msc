@@ -1,49 +1,20 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Damien P. George
- * Copyright (c) 2022 Angus Gratton
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- */
-
 #include "platform_config.h"
 
-#ifndef MICROPY_INCLUDED_SHARED_TINYUSB_TUSB_CONFIG_H
-#define MICROPY_INCLUDED_SHARED_TINYUSB_TUSB_CONFIG_H
-
-#ifndef MICROPY_HW_USB_MANUFACTURER_STRING
-#define MICROPY_HW_USB_MANUFACTURER_STRING "MicroPython"
+#ifndef HW_USB_MANUFACTURER_STRING
+#define HW_USB_MANUFACTURER_STRING "MicroPython"
 #endif
 
-#ifndef MICROPY_HW_USB_PRODUCT_FS_STRING
-#define MICROPY_HW_USB_PRODUCT_FS_STRING "Board in FS mode"
+#ifndef HW_USB_PRODUCT_FS_STRING
+#define HW_USB_PRODUCT_FS_STRING "Board in FS mode"
 #endif
 
-#ifndef MICROPY_HW_USB_CDC_INTERFACE_STRING
-#define MICROPY_HW_USB_CDC_INTERFACE_STRING "Board CDC"
+#ifndef HW_USB_CDC_INTERFACE_STRING
+#define HW_USB_CDC_INTERFACE_STRING "Board CDC"
 #endif
 
 #define CFG_TUSB_RHPORT0_MODE   (OPT_MODE_DEVICE)
 
-#define CFG_TUD_CDC             (1)
+#define CFG_TUD_CDC             (0)
 
 // CDC Configuration
 #if CFG_TUD_CDC
@@ -54,11 +25,11 @@
 
 // MSC Configuration
 #if CFG_TUD_MSC
-#ifndef MICROPY_HW_USB_MSC_INTERFACE_STRING
-#define MICROPY_HW_USB_MSC_INTERFACE_STRING "Board MSC"
+#ifndef HW_USB_MSC_INTERFACE_STRING
+#define HW_USB_MSC_INTERFACE_STRING "Board MSC"
 #endif
 // Set MSC EP buffer size to FatFS block size to avoid partial read/writes (offset arg).
-#define CFG_TUD_MSC_BUFSIZE (MICROPY_FATFS_MAX_SS)
+#define CFG_TUD_MSC_BUFSIZE (FLASH_SECTOR_SIZE)
 #endif
 
 // Define static descriptor size and interface count based on the above config
@@ -113,5 +84,3 @@
 #define USBD_STR_STATIC_MAX (0)
 #define USBD_EP_STATIC_MAX (0)
 #endif
-
-#endif // MICROPY_HW_ENABLE_USBDEV

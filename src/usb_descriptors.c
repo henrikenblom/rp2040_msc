@@ -56,8 +56,8 @@ const tusb_desc_device_t mp_usbd_desc_device_static = {
         .bDeviceSubClass = MISC_SUBCLASS_COMMON,
         .bDeviceProtocol = MISC_PROTOCOL_IAD,
         .bMaxPacketSize0 = CFG_TUD_ENDPOINT0_SIZE,
-        .idVendor = MICROPY_HW_USB_VID,
-        .idProduct = MICROPY_HW_USB_PID,
+        .idVendor = HW_USB_VID,
+        .idProduct = HW_USB_PID,
         .bcdDevice = 0x0100,
         .iManufacturer = USBD_STR_MANUF,
         .iProduct = USBD_STR_PRODUCT,
@@ -95,19 +95,19 @@ const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
             desc_str = serial_buf;
             break;
         case USBD_STR_MANUF:
-            desc_str = MICROPY_HW_USB_MANUFACTURER_STRING;
+            desc_str = HW_USB_MANUFACTURER_STRING;
             break;
         case USBD_STR_PRODUCT:
-            desc_str = MICROPY_HW_USB_PRODUCT_FS_STRING;
+            desc_str = HW_USB_PRODUCT_FS_STRING;
             break;
 #if CFG_TUD_CDC
             case USBD_STR_CDC:
-                desc_str = MICROPY_HW_USB_CDC_INTERFACE_STRING;
+                desc_str = HW_USB_CDC_INTERFACE_STRING;
                 break;
 #endif
 #if CFG_TUD_MSC
         case USBD_STR_MSC:
-            desc_str = MICROPY_HW_USB_MSC_INTERFACE_STRING;
+            desc_str = HW_USB_MSC_INTERFACE_STRING;
             break;
 #endif
         default:

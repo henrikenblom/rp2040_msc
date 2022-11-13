@@ -22,6 +22,7 @@ add_executable(rp2040_msc
         src/ffunicode.c
         src/usb_descriptors.c
         src/msc_disk.c
+        src/ffsystem.c
         )
 
 add_custom_target(build-time-make-directory ALL

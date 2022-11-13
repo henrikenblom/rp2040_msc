@@ -2,7 +2,6 @@
 #include <hardware/flash.h>
 #include "ff.h"
 #include "device/usbd.h"
-#include "bsp/board.h"
 
 //--------------------------------------------------------------------+
 // Device callbacks
@@ -10,10 +9,12 @@
 
 // Invoked when device is mounted
 void tud_mount_cb(void) {
+    printf("");
 }
 
 // Invoked when device is unmounted
 void tud_umount_cb(void) {
+    printf("");
 }
 
 // Invoked when usb bus is suspended
@@ -25,32 +26,6 @@ void tud_suspend_cb(bool remote_wakeup_en) {
 
 // Invoked when usb bus is resumed
 void tud_resume_cb(void) {
-}
-
-
-//--------------------------------------------------------------------+
-// USB CDC
-//--------------------------------------------------------------------+
-void cdc_task(void) {
-    // connected() check for DTR bit
-    // Most but not all terminal client set this when making connection
-    // if ( tud_cdc_connected() )
-    {
-        // connected and there are data available
-        if (tud_cdc_available()) {
-            // read datas
-            char buf[64];
-            uint32_t count = tud_cdc_read(buf, sizeof(buf));
-            (void) count;
-
-            // Echo back
-            // Note: Skip echo by commenting out write() and write_flush()
-            // for throughput test e.g
-            //    $ dd if=/dev/zero of=/dev/ttyACM0 count=10000
-            tud_cdc_write(buf, count);
-            tud_cdc_write_flush();
-        }
-    }
 }
 
 // Invoked when cdc when line state changed e.g connected/disconnected
@@ -85,17 +60,13 @@ int main() {
     FRESULT fr;     /* FatFs return code */
 
     fs = malloc(sizeof(FATFS));
-    f_mkfs(fs, FM_FAT | FM_SFD, 0, work, sizeof work);
+    if (f_mount(fs, "", FA_READ | FA_WRITE) != FR_OK) {
+        f_mkfs("", 0, work, sizeof(work));
+        f_setlabel("RP2040SID");
+        f_mount(fs, "", FA_READ | FA_WRITE);
+    }
+    f_unmount("");
 
-    f_mount(fs);
-
-    f_open(fs, &fil, "hello.txt", FA_CREATE_NEW | FA_WRITE);
-    f_write(&fil, "Hello, World!\r\n", 15, &bw);
-    f_close(&fil);
-    fr = f_open(fs, &fil, "hello.txt", FA_READ);
-    if (fr) return (int)fr;
-    f_close(&fil);
-    f_umount(fs);
     tud_init(BOARD_TUD_RHPORT);
 
     while (true) {
