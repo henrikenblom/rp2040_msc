@@ -1,12 +1,17 @@
 #include "tusb.h"
 #include "platform_config.h"
 #include "diskio.h"
+#include "msc_control.h"
 
 static bool ejected = false;
 
+void set_msc_ready_to_attach() {
+    ejected = false;
+}
+
 void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16], uint8_t product_rev[4]) {
     (void) lun;
-    const char vid[] = "Micropy";
+    const char vid[] = "Enblom";
     const char pid[] = "Mass Storage";
     const char rev[] = "1.0";
 
@@ -34,10 +39,8 @@ bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, boo
     (void) power_condition;
     if (load_eject) {
         if (start) {
-            // load disk storage
             ejected = false;
         } else {
-            // unload disk storage
             ejected = true;
         }
     }
@@ -64,13 +67,10 @@ int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, u
     int32_t resplen = 0;
     switch (scsi_cmd[0]) {
         case SCSI_CMD_PREVENT_ALLOW_MEDIUM_REMOVAL:
-            // Sync the logical unit if needed.
             break;
 
         default:
-            // Set Sense = Invalid Command Operation
             tud_msc_set_sense(lun, SCSI_SENSE_ILLEGAL_REQUEST, 0x20, 0x00);
-            // negative means error -> tinyusb could stall and/or response with failed status
             resplen = -1;
             break;
     }

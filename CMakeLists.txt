@@ -31,7 +31,6 @@ add_custom_target(build-time-make-directory ALL
 target_link_libraries(rp2040_msc PUBLIC
         pico_stdlib
         pico_bootsel_via_double_reset
-        pico_multicore
         pico_unique_id
         tinyusb_common
         tinyusb_device
@@ -49,10 +48,7 @@ target_include_directories(rp2040_msc
         )
 
 target_compile_definitions(rp2040_msc PUBLIC
-        CFG_TUH_MSC=1
-        CFG_TUH_DEVICE_MAX=1
         CFG_TUD_MSC=1
-        PICO_NO_BI_STDIO_UART=1
         PICO_RP2040_USB_DEVICE_ENUMERATION_FIX=1
         )
 
